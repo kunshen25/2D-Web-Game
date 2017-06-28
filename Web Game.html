@@ -19,9 +19,19 @@ var ctx = canvas.getContext("2d");
 var ballRadius = 10;
 var ballStartSpeed = 1;
 var ball = {x:canvas.width/2, y:canvas.height/2, dx:ballStartSpeed, dy:ballStartSpeed, radius: ballRadius};
+var paddleHeight = 10;
+var paddleWidth = 75;
+var paddleX = (canvas.width - paddleWidth) / 2;
+var rightPressed = false;
+var leftPressed = false;
+
+function endGame() {
+	alert("GAME OVER :)");
+	document.location.reload();
+}
 
 function bounce() {
-	if ((ball.y + ball.radius) >= canvas.height || (ball.y - ball.radius) <= 0) {
+	if ((ball.y - ball.radius) <= 0) {
 		ball.dy *= -1;
 	}
 
@@ -29,35 +39,16 @@ function bounce() {
 		ball.dx *= -1;
 	}
 
-}
 
-function checkKey() {
-	if (!window.event) {
-		return;
-	}
-
-	var e =  window.event.keyCode;
-
-	// left arrow
-	if (e == 37) {
-		ball.dx -= 1;
-	}
-
-	// right arrow
-	if (e == 39) {
-		ball.dx += 1;
-	}
-
-	// up arrow
-	if (e == 38) {
-		ball.dy -= 1;
-	}
-
-	// down arrow
-	if (e == 40) {
-		ball.dy += 1;
+	if ((ball.y + ball.radius) >= canvas.height) {
+		if ((ball.x <= (paddleX + paddleWidth)) && (ball.x >= paddleX)) {
+			ball.dy *= -1;
+		} else {
+			endGame();
+		}
 	}
 }
+
 
 function drawBall() {
 	ctx.beginPath();
@@ -75,12 +66,51 @@ function drawBall() {
 	ctx.closePath();
 }
 
+function drawPaddle() {
+	ctx.beginPath();
+	if (rightPressed && (paddleX + paddleWidth <= canvas.width)) {
+		//console.log(paddleX);
+		paddleX += 5;
+	}
+
+	if (leftPressed && (paddleX >= 0)) {
+		//console.log(paddleX);
+		paddleX -= 5;
+	}
+	ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+	ctx.fillStyle = "#0095DD";
+	ctx.fill();
+	ctx.closePath();
+}
+
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawBall();
+	drawPaddle();
 }
 
+function keyDownHandler(e) {
+	if (e.keyCode == 39) {
+		rightPressed = true;
+	}
 
+	if (e.keyCode == 37) {
+		leftPressed = true;
+	}
+}
+
+function keyUpHandler(e) {
+	if (e.keyCode == 39) {
+		rightPressed = false;
+	}
+
+	if (e.keyCode == 37) {
+		leftPressed = false;
+	}
+}
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
 setInterval(draw, 10);
 
 </script>
