@@ -16,12 +16,72 @@
 
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
+var ballRadius = 10;
+var ballStartSpeed = 1;
+var ball = {x:canvas.width/2, y:canvas.height/2, dx:ballStartSpeed, dy:ballStartSpeed, radius: ballRadius};
 
-ctx.beginPath();
-ctx.rect(160,10,100,40);
-ctx.strokeStyle = "rgba(0,0,244,0.5)";
-ctx.stroke();
-ctx.closePath;
+function bounce() {
+	if ((ball.y + ball.radius) >= canvas.height || (ball.y - ball.radius) <= 0) {
+		ball.dy *= -1;
+	}
+
+	if((ball.x + ball.radius) >= canvas.width || (ball.x - ball.radius) <= 0) {
+		ball.dx *= -1;
+	}
+
+}
+
+function checkKey() {
+	if (!window.event) {
+		return;
+	}
+
+	var e =  window.event.keyCode;
+
+	// left arrow
+	if (e == 37) {
+		ball.dx -= 1;
+	}
+
+	// right arrow
+	if (e == 39) {
+		ball.dx += 1;
+	}
+
+	// up arrow
+	if (e == 38) {
+		ball.dy -= 1;
+	}
+
+	// down arrow
+	if (e == 40) {
+		ball.dy += 1;
+	}
+}
+
+function drawBall() {
+	ctx.beginPath();
+	ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+
+	// check if ball reached edges
+	bounce();
+
+	// update ball location
+	ball.x = ball.x + ball.dx; 
+	ball.y = ball.y + ball.dy;
+
+	ctx.fillStyle = "#0095DD";
+	ctx.fill();
+	ctx.closePath();
+}
+
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawBall();
+}
+
+
+setInterval(draw, 10);
 
 </script>
 
